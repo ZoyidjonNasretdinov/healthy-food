@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recipes | heealyfood</title>
+    <link rel="stylesheet" href="./main.css">
+</head>
+<body>
+    <header>
+<div class="logo"><a href="./index.html" style="text-decoration:none; color:inherit;">healthy<span>food</span></a></div>
+        <nav>
+            <ul>
+                <li><a href="./recipes.html" class="active">Retseptlar</a></li>
+                <li><a href="./nutration.html">Foydali Maslahatlar</a></li>
+                <li><a href="./mission.html">Bizning Missiyamiz</a></li>
+
+                <li><a href="./Screen.html">AI Skaner</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="featured-recipe" style="padding: 50px 8%; background: #e8f5e9; border-radius: 20px; margin-bottom: 40px;">
+    <h2>Tanlangan shifobaxsh taom</h2>
+    <div style="display:flex; align-items:center; gap: 40px; flex-wrap:wrap;">
+        <div style="flex:1;">
+            <h3>Losos va ko'katlar</h3>
+            <p>Maksimal Omega-3 so'rilishi uchun haftaning eng yaxshi tanlovi. Oddiy, tezkor va shifokorlar tomonidan tavsiya etilgan.</p>
+            <button class="cta-btn" onclick="openModal('salmon')">To'liq retseptni ko'rish</button>
+        </div>
+        <div style="flex:1;">
+            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400" style="border-radius:20px; width:100%;">
+        </div>
+    </div>
+</section>
+    <section style="padding: 120px 8%;">
+        <h2>Shifobaxsh retseptlar</h2>
+        <div class="food-grid">
+<div class="food-card" onclick="openModal('quinoa')">
+    <div class="food-image">🥣</div>
+    <h3>Kinoa quvvat kosasi</h3>
+    <div class="meta-tags">
+        <span class="tag">Oson</span>
+        <span class="tag">~$3.50</span>
+    </div>
+    <p class="benefit">Yuqori oqsil va kletchatka</p>
+    <button class="cta-btn">Retseptni ko'rish</button>
+</div>
+
+<div class="food-card" onclick="openModal('smoothie')">
+    <div class="food-image">🥤</div>
+    <h3>Yallig'lanishga qarshi</h3>
+    <div class="meta-tags">
+        <span class="tag">Oson</span>
+        <span class="tag">~$0.50</span>
+    </div>
+    <p class="benefit">Yashil detoks smuzi</p>
+    <button class="cta-btn">Retseptni ko'rish</button>
+</div>
+<div class="food-card" onclick="openModal('Salad')">
+    <div class="food-image">🥗</div>
+    <h3>Keyl va olma salati</h3>
+    <div class="meta-tags">
+        <span class="tag">Oson</span>
+        <span class="tag">~$6.50</span>
+    </div>
+    <p class="benefit">Vitamin C va kletchatka</p>
+    <button class="cta-btn">Retseptni ko'rish</button>
+</div>
+    <div class="food-card" data-category="recovery">
+    <div class="food-image">🍛</div>
+    <h3>Kurkumali karri</h3>
+    <span class="tag">Oson</span>
+    <span class="tag">~$4.50</span>
+    <p class="benefit">Tabiiy yallig'lanishga qarshi</p>
+    <button class="cta-btn" onclick="openModal('turmeric_curry')">Retseptni ko'rish</button>
+</div>
+</div>
+
+</div>
+
+<div id="recipeModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div id="modalBody">
+            </div>
+    </div>
+</div>
+
+    </section>
+    <section class="mission-extra">
+    <div class="content-box">
+        <h3>Kinoa quvvat kosasi</h3>
+        <p>1 stakan kinoani sovuq suv ostida yaxshilab yuving.
+
+        Idishga 2 stakan suv bilan birga soling va qaynatishga keltiring.
+
+        Olovni pasaytirib, qopqog'ini yoping va suv so'rilguncha 15 daqiqa davomida dimlang.
+
+        Vilka bilan aralashtiring va biroz sovuting.
+
+        Pishirilgan qora loviya bilan aralashtiring va ustiga avokado bo'laklarini qo'ying.
+
+        Yangi laym sharbati va bir chimdim tuz seping.</p>
+    </div>
+
+    <div class="content-box">
+        <h3>Yallig'lanishga qarshi kurkumali karri</h3>
+        <p>Tovada o'rtacha olovda bir choy qoshiq zaytun moyini qizdiring.
+
+        Mayda to'g'ralgan piyoz va qirg'ichdan o'tkazilgan yangi kurkuma qo'shing; xushbo'y hid chiqquncha qovuring.
+
+        Bir banka yog'li kokos sutini quying va past olovda qaynatib oling.
+
+        Yuvilgan no'xat qo'shing va 10 daqiqa davomida pishiring.
+
+        Ikki hovuch yangi ismaloq qo'shing va u yumshaguncha aralashtiring.
+
+        Murch (kurkumani faollashtirish uchun) bilan ziravorlang va dasturxonga torting.</p>
+    </div>
+
+    <div class="content-box">
+        <h3>Zanjabil-sarimsoqli sho'rva</h3>
+        <p>Maydalangan sarimsoq va qirg'ichdan o'tkazilgan ko'p miqdorda zanjabilni bir tomchi yog' bilan qovuring.
+
+        To'g'ralgan sabzi va selderey qo'shing; 5 daqiqa davomida pishiring.
+
+        Sabzavotli bulyon quying va qaynatib oling.
+
+        Olovni pasaytiring va sabzi yumshaguncha 20 daqiqa davomida dimlang.
+
+        Ixtiyoriy ravishda blenderda aralashtiring yoki bo'lak holida qoldiring.
+
+        Immunitetni oshirish uchun issiq holida iching.</p>
+    </div>
+    </section>
+    <footer>
+    <div class="footer-content">
+        <div class="footer-logo">
+            <h3>healthy<span>food</span></h3>
+            <p>Har bir luqma bilan tanangizni davolang.</p>
+        </div>
+        <div class="footer-links">
+            <ul>
+                <li><a href="./admin.html" style="color: var(--primary-green); font-weight: bold;">Admin Panel</a></li>
+                <li><a href="#">Maxfiylik siyosati</a></li>
+                <li><a href="#">Foydalanish shartlari</a></li>
+                <li><a href="#">Biz bilan bog'lanish</a></li>
+            </ul>
+        </div>
+        <div class="footer-social">
+            <h4>Bizning sayohatimizni kuzating</h4>
+            <div class="social-icons">
+                <a href="#">FB</a>
+                <a href="#">IG</a>
+                <a href="#">TW</a>
+            </div>
+        </div>
+    </div>
+<div class="footer-bottom">
+    <div class="made-in-uz">
+        <span>O'zbekistonda tayyorlangan</span>
+        <span class="flag-icon">🇺🇿</span>
+    </div>
+    <p>&copy; 2026 healyfood. Barcha huquqlar himoyalangan.</p>
+</div>
+</footer>
+    <script src="./main.js"></script>
+</body>
+</html>

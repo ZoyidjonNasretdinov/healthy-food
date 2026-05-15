@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen AI | healthyfood</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Main CSS for Header Consistency -->
+    <link rel="stylesheet" href="./main.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .custom-shadow { box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        .loader { border-top-color: #10b981; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Fix for fixed header spacing */
+        main { margin-top: 100px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Header -->
+    <header id="navbar">
+        <div class="logo">healthy<span>food</span></div>
+    <nav>
+        <ul>
+            <li><a href="./recipes.html">Retseptlar</a></li>
+            <li><a href="./nutration.html">Foydali Maslahatlar</a></li>
+            <li><a href="./mission.html">Bizning Missiyamiz</a></li>
+            <li><a href="./Screen.html">AI Skaner</a></li>
+        </ul>
+    </nav>
+        <!-- <button class="cta-btn">Telegramga qo'shilish</button> -->
+    </header>
+
+    <main class="max-w-6xl mx-auto p-6 md:p-12 grid md:grid-cols-2 gap-12 min-h-[calc(100vh-80px)]">
+        
+        <!-- Left Side: Upload -->
+        <div class="space-y-8">
+            <div class="space-y-4">
+                <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 md:text-5xl leading-tight">
+                    Nima iste'mol <br /> 
+                    <span class="text-emerald-500">qilyapsiz?</span>
+                </h1>
+                <p class="text-slate-500 text-lg leading-relaxed max-w-md">
+                    Taom rasmini yuklang va uning tarkibi, kaloriyasi hamda foydasi haqida ma'lumot oling.
+                </p>
+            </div>
+
+            <div id="dropZone" onclick="document.getElementById('fileInput').click()" 
+                class="relative aspect-square rounded-[2.5rem] border-2 border-dashed border-slate-300 hover:border-emerald-500 bg-white transition-all cursor-pointer overflow-hidden group flex flex-col items-center justify-center p-8 text-center">
+                
+                <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleImage(event)">
+                
+                <div id="uploadPlaceholder" class="space-y-4">
+                    <div class="p-6 bg-slate-50 rounded-3xl transition-transform group-hover:scale-110 group-hover:bg-emerald-50 inline-block">
+                        <i data-lucide="upload" class="w-10 h-10 text-slate-400 group-hover:text-emerald-500"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-lg mb-1 text-slate-800">Rasmni yuklang</p>
+                        <p class="text-sm text-slate-400">Yoki bu yerga bosing</p>
+                    </div>
+                </div>
+
+                <img id="previewImg" class="absolute inset-0 w-full h-full object-cover hidden transition-transform duration-700 group-hover:scale-105">
+                
+                <div id="imageOverlay" class="absolute inset-0 bg-slate-900/40 hidden items-center justify-center backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div class="bg-white/20 p-4 rounded-full backdrop-blur-md">
+                        <i data-lucide="camera" class="text-white w-10 h-10"></i>
+                    </div>
+                </div>
+            </div>
+
+            <button id="analyzeBtn" onclick="startAnalysis()" disabled
+                class="w-full py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-all transform active:scale-95 bg-slate-200 text-slate-400 cursor-not-allowed">
+                <i data-lucide="zap" id="zapIcon" class="w-6 h-6 fill-emerald-400 text-emerald-400 hidden"></i>
+                <div id="btnLoader" class="loader w-6 h-6 border-4 border-slate-300 rounded-full hidden"></div>
+                <span id="btnText">Rasmni tanlang</span>
+            </button>
+
+            <div class="flex justify-center">
+                <button onclick="resetAll()" class="text-sm font-semibold text-slate-400 hover:text-emerald-500 transition-colors flex items-center gap-2">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    <span>Natijalarni tozalash</span>
+                </button>
+            </div>
+
+            <div id="errorBox" class="p-4 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl hidden items-center gap-3 fade-in">
+                <i data-lucide="shield-alert" class="w-5 h-5 flex-shrink-0"></i>
+                <p id="errorMsg" class="text-sm font-semibold"></p>
+            </div>
+        </div>
+
+        <!-- Right Side: Results -->
+        <div id="resultsContainer" class="bg-white rounded-[3rem] border border-slate-200 p-8 md:p-10 custom-shadow relative overflow-hidden flex flex-col items-center justify-center">
+            
+            <!-- Default State -->
+            <div id="emptyState" class="flex flex-col items-center justify-center gap-4">
+                <div class="w-32 h-32 bg-slate-50 rounded-full flex items-center justify-center animate-pulse">
+                    <i data-lucide="image" class="w-12 h-12 text-slate-200"></i>
+                </div>
+                <div class="space-y-2 text-center">
+                    <h3 class="text-xl font-bold text-slate-800">Natijalarni kuting</h3>
+                    <p class="text-slate-400 text-sm max-w-[240px] mx-auto">
+                        Hozircha hech narsa skanerlangani yo'q. Chap tarafdan rasm yuklang.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Result State (Hidden by default) -->
+            <div id="resultContent" class="hidden w-full space-y-8 fade-in">
+                <!-- Header -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                        <div id="healthBadge" class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-tighter shadow-sm text-white">
+                            Sog'lom
+                        </div>
+                        <div class="flex items-center gap-1 text-orange-500 font-black text-2xl">
+                            <i data-lucide="flame" class="w-7 h-7 fill-orange-500"></i>
+                            <span id="resCalories">0</span>
+                            <span class="text-xs text-slate-400 font-medium ml-1 uppercase">kkal</span>
+                        </div>
+                    </div>
+                    <h2 id="resFoodName" class="text-4xl font-black text-slate-900 leading-none">Taom nomi</h2>
+                </div>
+
+                <!-- Macros -->
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-blue-50 text-blue-700 p-5 rounded-[2rem] border border-white shadow-sm text-center">
+                        <span class="text-[10px] font-black uppercase tracking-tighter opacity-60 block mb-1">Oqsil</span>
+                        <span id="resProtein" class="text-xl font-black">0g</span>
+                    </div>
+                    <div class="bg-amber-50 text-amber-700 p-5 rounded-[2rem] border border-white shadow-sm text-center">
+                        <span class="text-[10px] font-black uppercase tracking-tighter opacity-60 block mb-1">Yog'</span>
+                        <span id="resFat" class="text-xl font-black">0g</span>
+                    </div>
+                    <div class="bg-purple-50 text-purple-700 p-5 rounded-[2rem] border border-white shadow-sm text-center">
+                        <span class="text-[10px] font-black uppercase tracking-tighter opacity-60 block mb-1">Uglevod</span>
+                        <span id="resCarbs" class="text-xl font-black">0g</span>
+                    </div>
+                </div>
+
+                <!-- Ingredients -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2 text-slate-800">
+                        <i data-lucide="shopping-basket" class="w-5 h-5 text-emerald-500"></i>
+                        <h3 class="font-bold">Asosiy masalliqlar</h3>
+                    </div>
+                    <div id="resIngredients" class="flex flex-wrap gap-2">
+                        <!-- Chips go here -->
+                    </div>
+                </div>
+
+                <!-- Pros & Cons -->
+                <div class="grid gap-5">
+                    <div class="p-6 bg-emerald-50 rounded-[2rem] border border-emerald-100">
+                        <div class="flex items-center gap-2 text-emerald-700 mb-4">
+                            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                            <h3 class="font-bold text-sm uppercase">Foydali jihatlari</h3>
+                        </div>
+                        <ul id="resBenefits" class="space-y-2 text-sm text-emerald-800/80 font-medium">
+                            <!-- List items -->
+                        </ul>
+                    </div>
+
+                    <div id="risksBox" class="p-6 bg-rose-50 rounded-[2rem] border border-rose-100">
+                        <div class="flex items-center gap-2 text-rose-700 mb-4">
+                            <i data-lucide="shield-alert" class="w-5 h-5"></i>
+                            <h3 class="font-bold text-sm uppercase">Ehtimoliy xavflar</h3>
+                        </div>
+                        <ul id="resRisks" class="space-y-2 text-sm text-rose-800/80 font-medium">
+                            <!-- List items -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="text-center pt-6 border-t border-slate-100">
+                    <p class="text-[10px] text-slate-400 font-bold leading-relaxed uppercase tracking-widest">
+                        Sun'iy intellekt tahlili • NutriSkan AI
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- <footer class="max-w-6xl mx-auto p-12 text-center text-slate-400 text-[11px] font-bold tracking-[0.2em] uppercase">
+        &copy; 2026 NUTRISKAN AI. ILG'OR TEXNOLOGIYALAR ASOSIDA ISHLANGAN.
+    </footer> -->
+
+        <footer>
+    <div class="footer-content">
+        <div class="footer-logo">
+            <h3>healthy<span>food</span></h3>
+            <p>Har bir luqma bilan tanangizni davolang.</p>
+        </div>
+        <div class="footer-links">
+            <ul>
+                <li><a href="./admin.html" style="color: var(--primary-green); font-weight: bold;">Admin Panel</a></li>
+                <li><a href="#">Maxfiylik siyosati</a></li>
+                <li><a href="#">Foydalanish shartlari</a></li>
+                <li><a href="#">Biz bilan bog'lanish</a></li>
+            </ul>
+        </div>
+        <div class="footer-social">
+            <h4>Bizning sayohatimizni kuzating</h4>
+            <div class="social-icons">
+                <a href="#">FB</a>
+                <a href="#">IG</a>
+                <a href="#">TW</a>
+            </div>
+        </div>
+    </div>
+<div class="footer-bottom">
+    <div class="made-in-uz">
+        <span>O'zbekistonda tayyorlangan</span>
+        <span class="flag-icon">🇺🇿</span>
+    </div>
+    <p>&copy; 2026 healyfood. Barcha huquqlar himoyalangan.</p>
+</div>
+</footer>
+
+    <!-- GEMINI LOGIC -->
+    <script type="module">
+        // API KEY from .env
+        const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY; 
+
+        let selectedImage = null;
+        let isAnalyzing = false;
+
+        // Initialize icons
+        lucide.createIcons();
+
+        window.handleImage = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showError("Rasm hajmi juda katta (5MB dan kam bo'lishi kerak)");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                selectedImage = event.target.result;
+                const preview = document.getElementById('previewImg');
+                preview.src = selectedImage;
+                preview.classList.remove('hidden');
+                document.getElementById('uploadPlaceholder').classList.add('hidden');
+                document.getElementById('imageOverlay').classList.remove('hidden');
+                document.getElementById('imageOverlay').classList.add('flex');
+                
+                // Enable button
+                const btn = document.getElementById('analyzeBtn');
+                btn.disabled = false;
+                btn.className = "w-full py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-all transform active:scale-95 bg-slate-900 text-white hover:bg-slate-800 shadow-xl shadow-slate-200 hover:shadow-2xl";
+                document.getElementById('btnText').innerText = "Hozir tahlil qilish";
+                document.getElementById('zapIcon').classList.remove('hidden');
+                hideError();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        window.startAnalysis = async function() {
+            if (!selectedImage || isAnalyzing) return;
+
+            setLoading(true);
+            hideError();
+
+            try {
+                const base64Data = selectedImage.split(',')[1];
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+                
+                const prompt = "Ushbu taom rasmini tahlil qiling va natijani faqat O'ZBEK TILIDA JSON formatida qaytaring. Strukturasi juda aniq bo'lsin: { \"foodName\": \"...\", \"estimatedCalories\": 0, \"ingredients\": [\"...\"], \"macronutrients\": { \"protein\": \"...\", \"fat\": \"...\", \"carbs\": \"...\" }, \"healthStatus\": \"Sog'lom\" yoki \"Zararli\", \"possibleRisks\": [\"...\"], \"benefits\": [\"...\"] }";
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: prompt },
+                                { inline_data: { mime_type: "image/jpeg", data: base64Data } }
+                            ]
+                        }],
+                        generationConfig: {
+                            responseMimeType: "application/json"
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+
+                const resultText = data.candidates[0].content.parts[0].text;
+                const resultJson = JSON.parse(resultText);
+                showResults(resultJson);
+
+            } catch (err) {
+                console.error(err);
+                showError("Xatolik: API kaliti noto'g'ri yoki internet aloqasi yo'q. Iltimos, API kalitini scanner.html faylida GEMINI_API_KEY o'zgaruvchisiga o'rnating.");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function showResults(data) {
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('resultContent').classList.remove('hidden');
+
+            document.getElementById('resFoodName').innerText = data.foodName;
+            document.getElementById('resCalories').innerText = data.estimatedCalories;
+            document.getElementById('resProtein').innerText = data.macronutrients.protein;
+            document.getElementById('resFat').innerText = data.macronutrients.fat;
+            document.getElementById('resCarbs').innerText = data.macronutrients.carbs;
+
+            // Badge
+            const badge = document.getElementById('healthBadge');
+            badge.innerText = data.healthStatus;
+            const isUnhealthy = data.healthStatus.toLowerCase().includes('zararli') || data.healthStatus.toLowerCase().includes('unhealthy');
+            badge.className = `px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-tighter shadow-sm text-white ${isUnhealthy ? 'bg-rose-500' : 'bg-emerald-500'}`;
+
+            // Ingredients
+            const ingContainer = document.getElementById('resIngredients');
+            ingContainer.innerHTML = data.ingredients.map(ing => `
+                <span class="px-4 py-2 bg-slate-50 text-slate-700 rounded-2xl text-sm font-semibold border border-slate-100">${ing}</span>
+            `).join('');
+
+            // Benefits
+            document.getElementById('resBenefits').innerHTML = data.benefits.map(b => `
+                <li class="flex gap-2"><span class="text-emerald-400">•</span> ${b}</li>
+            `).join('');
+
+            // Risks
+            document.getElementById('resRisks').innerHTML = data.possibleRisks.map(r => `
+                <li class="flex gap-2"><span class="text-rose-400">•</span> ${r}</li>
+            `).join('');
+
+            // Scroll results into view on mobile
+            if (window.innerWidth < 768) {
+                document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function setLoading(loading) {
+            isAnalyzing = loading;
+            const btn = document.getElementById('analyzeBtn');
+            const loader = document.getElementById('btnLoader');
+            const zap = document.getElementById('zapIcon');
+            const text = document.getElementById('btnText');
+
+            if (loading) {
+                btn.disabled = true;
+                btn.classList.add('opacity-80');
+                loader.classList.remove('hidden');
+                zap.classList.add('hidden');
+                text.innerText = "Tahlil qilinmoqda...";
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('opacity-80');
+                loader.classList.add('hidden');
+                zap.classList.remove('hidden');
+                text.innerText = "Hozir tahlil qilish";
+            }
+        }
+
+        function showError(msg) {
+            const errorBox = document.getElementById('errorBox');
+            document.getElementById('errorMsg').innerText = msg;
+            errorBox.classList.remove('hidden');
+            errorBox.classList.add('flex');
+        }
+
+        function hideError() {
+            const errorBox = document.getElementById('errorBox');
+            errorBox.classList.add('hidden');
+            errorBox.classList.remove('flex');
+        }
+
+        window.resetAll = function() {
+            selectedImage = null;
+            document.getElementById('previewImg').src = "";
+            document.getElementById('previewImg').classList.add('hidden');
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            document.getElementById('imageOverlay').classList.add('hidden');
+            document.getElementById('imageOverlay').classList.remove('flex');
+            
+            const btn = document.getElementById('analyzeBtn');
+            btn.disabled = true;
+            btn.className = "w-full py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-all transform active:scale-95 bg-slate-200 text-slate-400 cursor-not-allowed";
+            document.getElementById('btnText').innerText = "Rasmni tanlang";
+            document.getElementById('zapIcon').classList.add('hidden');
+            
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('resultContent').classList.add('hidden');
+            hideError();
+        }
+    </script>
+    <script src="./main.js"></script>
+</body>
+</html>
